@@ -1,0 +1,17 @@
+FROM golang:1.22
+ADD . /usr/bin/auth
+ADD ./db /usr/bin/auth/db
+
+RUN ls
+COPY . /usr/bin/auth
+COPY db /usr/bin/auth
+RUN ls
+WORKDIR /usr/bin/auth/internal/auth
+RUN echo $GOPATH
+RUN go version
+RUN go mod download
+RUN go build
+RUN go install -v ./...
+ENTRYPOINT auth
+EXPOSE 8080
+
