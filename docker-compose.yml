@@ -1,18 +1,26 @@
 version: '3.8'
 
 services:
-  redis:
-    image: redis:latest
-    ports:
-      - "6379:6379"
-  mysql:
-    image: mysql:latest
+  
+  postgres:
+    image: postgres
     environment:
-      MYSQL_ROOT_PASSWORD: Looser1997$
-      MYSQL_DATABASE: url_shortner
-
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Looser1997$
+      PGDATA: /data/postgres
+      POSTGRES_DB: auth
+    
+    ports:
+      - "5332:5432"
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -d postgres" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    
   auth_svc:
-    image: url-shortner:latest
+    image: auth_svc:latest
     build:
       context: .
       dockerfile: AuthDockerfile
@@ -31,7 +39,9 @@ services:
       BASE_URL : http://localhost:8090/api/v1/redirect/
       PORT: 8090
     depends_on:
-      - mysql
-      - redis
+      postgres:
+        condition: service_healthy
     restart: unless-stopped
+  
+  
 

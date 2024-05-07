@@ -19,7 +19,7 @@ import (
 
 func InitializeDomain(config2 config.Config, db *sqlx.DB) (app.PingApp, error) {
 	entry := logs.Init(config2)
-	mySQLPingRepository := adapters.NewMySQLPINGRepository(db, entry, config2)
+	mySQLPingRepository := adapters.NewPostgressPingRepository(db, entry, config2)
 	pingDomain := domain.NewPingDomain(entry, config2, mySQLPingRepository)
 	pingApplication := app.NewPingApplication(entry, config2, pingDomain)
 	return pingApplication, nil
@@ -27,7 +27,7 @@ func InitializeDomain(config2 config.Config, db *sqlx.DB) (app.PingApp, error) {
 
 func InitializePingApplication(config2 config.Config, db *sqlx.DB) (app.PingApp, error) {
 	entry := logs.Init(config2)
-	mySQLPingRepository := adapters.NewMySQLPINGRepository(db, entry, config2)
+	mySQLPingRepository := adapters.NewPostgressPingRepository(db, entry, config2)
 	pingDomain := domain.NewPingDomain(entry, config2, mySQLPingRepository)
 	pingApplication := app.NewPingApplication(entry, config2, pingDomain)
 	return pingApplication, nil

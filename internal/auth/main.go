@@ -6,6 +6,8 @@ import (
 	"log"
 
 	"login_api/internal/auth/container"
+	"login_api/internal/auth/repository/adapters"
+
 	//"login_api/internal/auth/ports"
 	"login_api/internal/common/config"
 	"login_api/internal/common/database/migrations"
@@ -20,8 +22,10 @@ import (
 	"connectrpc.com/connect"
 	//"github.com/go-chi/chi/v5"
 	_ "github.com/go-sql-driver/mysql"
+	_ "github.com/lib/pq"
+
+	_ "github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
-	"github.com/jmoiron/sqlx"
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
 )
@@ -65,15 +69,19 @@ func main() {
 
 	config := config.InitConfig()
 	// currently we are establishing connection without connection pool , need to enchance with connection pool
-	db, err := sqlx.Connect("mysql", config.MYSQLUser+":"+config.MYSQLPassword+"@("+config.MYSQLHost+":3306)/"+config.MYSQLDatabase)
+	// db, err := sqlx.Connect("mysql", config.MYSQLUser+":"+config.MYSQLPassword+"@("+config.MYSQLHost+":3306)/"+config.MYSQLDatabase)
+	// if err != nil {
+	// 	log.Fatalln(err)
+	// }
+	db, err := adapters.NewPostgreSQLConnection()
 	if err != nil {
 		log.Fatalln(err)
 	}
 
 	application, err := container.InitApplication(config, db)
 
+	fmt.Println(application.PingApplication.Ping(context.TODO()))
 	fmt.Println(err)
-
 	logger := logs.Init(config)
 	fmt.Println(logger)
 	fmt.Println(config.MYSQLHost)

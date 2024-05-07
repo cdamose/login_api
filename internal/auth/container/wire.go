@@ -16,7 +16,7 @@ import (
 )
 
 func InitializeDomain(config config.Config, db *sqlx.DB) (app.PingApp, error) {
-	wire.Build(app.NewPingApplication, domain.NewPingDomain, adapters.NewMySQLPINGRepository, logs.Init,
+	wire.Build(app.NewPingApplication, domain.NewPingDomain, adapters.NewPostgressPingRepository, logs.Init,
 		wire.Bind(new(app.PingApp), new(app.PingApplication)),
 		wire.Bind(new(repository.Repository), new(*adapters.MySQLPingRepository)))
 	//wire.Build(config.InitConfig)
@@ -24,7 +24,7 @@ func InitializeDomain(config config.Config, db *sqlx.DB) (app.PingApp, error) {
 }
 
 func InitializePingApplication(config config.Config, db *sqlx.DB) (app.PingApp, error) {
-	wire.Build(app.NewPingApplication, domain.NewPingDomain, adapters.NewMySQLPINGRepository, logs.Init,
+	wire.Build(app.NewPingApplication, domain.NewPingDomain, adapters.NewPostgressPingRepository, logs.Init,
 		wire.Bind(new(app.PingApp), new(app.PingApplication)),
 		wire.Bind(new(repository.Repository), new(*adapters.MySQLPingRepository)))
 	//wire.Build(config.InitConfig)
