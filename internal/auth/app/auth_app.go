@@ -34,8 +34,9 @@ func (app AuthApplication) SignUp(ctx context.Context, phone_number string) (*dt
 }
 
 func (app AuthApplication) VerifyAccount(ctx context.Context, user_id string, otp string) (*dto.VerifiedAccountResp, error) {
-	var resp *dto.VerifiedAccountResp
+	var resp = &dto.VerifiedAccountResp{}
 	domain_obj, err := app.domain.VerifyAccount(ctx, user_id, otp)
+	
 	if err != nil {
 		resp.Message = "Account Not Able to verified , pls try again"
 	}

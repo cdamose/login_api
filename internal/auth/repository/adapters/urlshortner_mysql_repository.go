@@ -63,6 +63,20 @@ func (m PostgresAuthRepository) CreateUserProfile(ctx context.Context, mobile_nu
 	return &user_profile, nil
 }
 
+func (m PostgresAuthRepository) UpdateOTPUsedStatus(ctx context.Context, user_id string, otp_code string, is_used bool) (bool, error) {
+	query := `UPDATE OTP SET is_used = :is_used WHERE user_id = :user_id AND otp_code = :otp_code;`
+	param := map[string]interface{}{
+		"user_id":  user_id,
+		"otp_code": otp_code,
+		"is_used":  is_used,
+	}
+	_, err := m.db.NamedQueryContext(ctx, query, param)
+	if err != nil {
+		return false, err
+	}
+	return true, nil
+}
+
 func (m PostgresAuthRepository) UpdateUserVerfiedStatus(ctx context.Context, user_id string, verified_status bool) (bool, error) {
 	query := `UPDATE UserAccount SET is_verified = :verified_status WHERE user_id = :user_id;`
 	param := map[string]interface{}{

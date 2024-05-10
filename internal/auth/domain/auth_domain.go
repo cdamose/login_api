@@ -52,6 +52,11 @@ func (ad *AuthDomain) VerifyAccount(ctx context.Context, user_id string, otp str
 	if err != nil {
 		return false, err
 	}
+	result, err = ad.repository.UpdateOTPUsedStatus(ctx, user_id, otp, true)
+	if err != nil {
+		return false, err
+	}
+
 	return result, err
 
 }

@@ -30,10 +30,10 @@ func (av *AuthServer) SignupWithPhoneNumber(ctx context.Context, re *connect.Req
 	return res, nil
 }
 func (av *AuthServer) VerifyAccount(ctx context.Context, re *connect.Request[authv1.VerifyAccountRequest]) (*connect.Response[authv1.VerifyAccountResponse], error) {
-	dto_obj, err := av.Application.AuthApplication.VerifyAccount(ctx, re.Msg.UserId, re.Msg.Code)
-	if err != nil {
-		return nil, connect.NewError(connect.CodeUnknown, err)
-	}
+	dto_obj, _ := av.Application.AuthApplication.VerifyAccount(ctx, re.Msg.UserId, re.Msg.Code)
+	// if err != nil {
+	// 	return nil, connect.NewError(connect.CodeUnknown, err)
+	// }
 	res := connect.NewResponse(&authv1.VerifyAccountResponse{
 		Message: dto_obj.Message,
 	})
