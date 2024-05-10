@@ -8,28 +8,35 @@ package container
 
 import (
 	"github.com/jmoiron/sqlx"
-	"login_api/internal/common/logs"
-	"login_api/internal/common/config"
 	"login_api/internal/auth/app"
 	"login_api/internal/auth/domain"
 	"login_api/internal/auth/repository/adapters"
+	"login_api/internal/common/config"
+	"login_api/internal/common/logs"
 )
 
 // Injectors from wire.go:
 
 func InitializeDomain(config2 config.Config, db *sqlx.DB) (app.PingApp, error) {
 	entry := logs.Init(config2)
-	mySQLPingRepository := adapters.NewPostgressPingRepository(db, entry, config2)
-	pingDomain := domain.NewPingDomain(entry, config2, mySQLPingRepository)
+	postgressPingRepository := adapters.NewPostgressPingRepository(db, entry, config2)
+	pingDomain := domain.NewPingDomain(entry, config2, postgressPingRepository)
 	pingApplication := app.NewPingApplication(entry, config2, pingDomain)
 	return pingApplication, nil
 }
 
 func InitializePingApplication(config2 config.Config, db *sqlx.DB) (app.PingApp, error) {
 	entry := logs.Init(config2)
-	mySQLPingRepository := adapters.NewPostgressPingRepository(db, entry, config2)
-	pingDomain := domain.NewPingDomain(entry, config2, mySQLPingRepository)
+	postgressPingRepository := adapters.NewPostgressPingRepository(db, entry, config2)
+	pingDomain := domain.NewPingDomain(entry, config2, postgressPingRepository)
 	pingApplication := app.NewPingApplication(entry, config2, pingDomain)
 	return pingApplication, nil
 }
 
+func InitializeAuthApplication(config2 config.Config, db *sqlx.DB) (app.AuthApp, error) {
+	entry := logs.Init(config2)
+	postgresAuthRepository := adapters.NewPostgresAuthRepository(db, entry, config2)
+	authDomain := domain.NewAuthDomain(entry, config2, postgresAuthRepository)
+	authApplication := app.NewAuthApplication(entry, config2, authDomain)
+	return authApplication, nil
+}

@@ -59,8 +59,8 @@ var (
 
 // AuthServiceClient is a client for the auth.AuthService service.
 type AuthServiceClient interface {
-	SignupWithPhoneNumber(context.Context, *connect.Request[protobuf.PhoneNumber]) (*connect.Response[protobuf.Response], error)
-	VerifyAccount(context.Context, *connect.Request[protobuf.OTP]) (*connect.Response[protobuf.UserProfile], error)
+	SignupWithPhoneNumber(context.Context, *connect.Request[protobuf.PhoneNumber]) (*connect.Response[protobuf.SignUpResponse], error)
+	VerifyAccount(context.Context, *connect.Request[protobuf.VerifyAccountRequest]) (*connect.Response[protobuf.VerifyAccountResponse], error)
 	Login(context.Context, *connect.Request[protobuf.LoginRequest]) (*connect.Response[protobuf.UserProfile], error)
 	OTPGenerate(context.Context, *connect.Request[protobuf.PhoneNumber]) (*connect.Response[protobuf.Response], error)
 	GetProfile(context.Context, *connect.Request[protobuf.PhoneNumber]) (*connect.Response[protobuf.UserProfile], error)
@@ -76,13 +76,13 @@ type AuthServiceClient interface {
 func NewAuthServiceClient(httpClient connect.HTTPClient, baseURL string, opts ...connect.ClientOption) AuthServiceClient {
 	baseURL = strings.TrimRight(baseURL, "/")
 	return &authServiceClient{
-		signupWithPhoneNumber: connect.NewClient[protobuf.PhoneNumber, protobuf.Response](
+		signupWithPhoneNumber: connect.NewClient[protobuf.PhoneNumber, protobuf.SignUpResponse](
 			httpClient,
 			baseURL+AuthServiceSignupWithPhoneNumberProcedure,
 			connect.WithSchema(authServiceSignupWithPhoneNumberMethodDescriptor),
 			connect.WithClientOptions(opts...),
 		),
-		verifyAccount: connect.NewClient[protobuf.OTP, protobuf.UserProfile](
+		verifyAccount: connect.NewClient[protobuf.VerifyAccountRequest, protobuf.VerifyAccountResponse](
 			httpClient,
 			baseURL+AuthServiceVerifyAccountProcedure,
 			connect.WithSchema(authServiceVerifyAccountMethodDescriptor),
@@ -111,20 +111,20 @@ func NewAuthServiceClient(httpClient connect.HTTPClient, baseURL string, opts ..
 
 // authServiceClient implements AuthServiceClient.
 type authServiceClient struct {
-	signupWithPhoneNumber *connect.Client[protobuf.PhoneNumber, protobuf.Response]
-	verifyAccount         *connect.Client[protobuf.OTP, protobuf.UserProfile]
+	signupWithPhoneNumber *connect.Client[protobuf.PhoneNumber, protobuf.SignUpResponse]
+	verifyAccount         *connect.Client[protobuf.VerifyAccountRequest, protobuf.VerifyAccountResponse]
 	login                 *connect.Client[protobuf.LoginRequest, protobuf.UserProfile]
 	oTPGenerate           *connect.Client[protobuf.PhoneNumber, protobuf.Response]
 	getProfile            *connect.Client[protobuf.PhoneNumber, protobuf.UserProfile]
 }
 
 // SignupWithPhoneNumber calls auth.AuthService.SignupWithPhoneNumber.
-func (c *authServiceClient) SignupWithPhoneNumber(ctx context.Context, req *connect.Request[protobuf.PhoneNumber]) (*connect.Response[protobuf.Response], error) {
+func (c *authServiceClient) SignupWithPhoneNumber(ctx context.Context, req *connect.Request[protobuf.PhoneNumber]) (*connect.Response[protobuf.SignUpResponse], error) {
 	return c.signupWithPhoneNumber.CallUnary(ctx, req)
 }
 
 // VerifyAccount calls auth.AuthService.VerifyAccount.
-func (c *authServiceClient) VerifyAccount(ctx context.Context, req *connect.Request[protobuf.OTP]) (*connect.Response[protobuf.UserProfile], error) {
+func (c *authServiceClient) VerifyAccount(ctx context.Context, req *connect.Request[protobuf.VerifyAccountRequest]) (*connect.Response[protobuf.VerifyAccountResponse], error) {
 	return c.verifyAccount.CallUnary(ctx, req)
 }
 
@@ -145,8 +145,8 @@ func (c *authServiceClient) GetProfile(ctx context.Context, req *connect.Request
 
 // AuthServiceHandler is an implementation of the auth.AuthService service.
 type AuthServiceHandler interface {
-	SignupWithPhoneNumber(context.Context, *connect.Request[protobuf.PhoneNumber]) (*connect.Response[protobuf.Response], error)
-	VerifyAccount(context.Context, *connect.Request[protobuf.OTP]) (*connect.Response[protobuf.UserProfile], error)
+	SignupWithPhoneNumber(context.Context, *connect.Request[protobuf.PhoneNumber]) (*connect.Response[protobuf.SignUpResponse], error)
+	VerifyAccount(context.Context, *connect.Request[protobuf.VerifyAccountRequest]) (*connect.Response[protobuf.VerifyAccountResponse], error)
 	Login(context.Context, *connect.Request[protobuf.LoginRequest]) (*connect.Response[protobuf.UserProfile], error)
 	OTPGenerate(context.Context, *connect.Request[protobuf.PhoneNumber]) (*connect.Response[protobuf.Response], error)
 	GetProfile(context.Context, *connect.Request[protobuf.PhoneNumber]) (*connect.Response[protobuf.UserProfile], error)
@@ -209,11 +209,11 @@ func NewAuthServiceHandler(svc AuthServiceHandler, opts ...connect.HandlerOption
 // UnimplementedAuthServiceHandler returns CodeUnimplemented from all methods.
 type UnimplementedAuthServiceHandler struct{}
 
-func (UnimplementedAuthServiceHandler) SignupWithPhoneNumber(context.Context, *connect.Request[protobuf.PhoneNumber]) (*connect.Response[protobuf.Response], error) {
+func (UnimplementedAuthServiceHandler) SignupWithPhoneNumber(context.Context, *connect.Request[protobuf.PhoneNumber]) (*connect.Response[protobuf.SignUpResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("auth.AuthService.SignupWithPhoneNumber is not implemented"))
 }
 
-func (UnimplementedAuthServiceHandler) VerifyAccount(context.Context, *connect.Request[protobuf.OTP]) (*connect.Response[protobuf.UserProfile], error) {
+func (UnimplementedAuthServiceHandler) VerifyAccount(context.Context, *connect.Request[protobuf.VerifyAccountRequest]) (*connect.Response[protobuf.VerifyAccountResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("auth.AuthService.VerifyAccount is not implemented"))
 }
 

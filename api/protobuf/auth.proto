@@ -14,6 +14,15 @@ message LoginRequest {
   OTP otp = 2;
 }
 
+
+message SignUpResponse {
+  string phone_number  = 1;
+  string created_at = 2;
+  bool is_verfied = 3;
+  string user_id = 4;
+  
+}
+
 message UserProfile {
   string phone_number  = 1;
   string created_at = 2;
@@ -33,12 +42,20 @@ message PhoneNumber {
   string number = 1;
 }
 
+message VerifyAccountRequest {
+  string user_id = 1;
+  string code = 2;
+}
+message VerifyAccountResponse {
+  string message = 1;
+  
+}
 message OTP {
   string code = 1;
 }
 service AuthService {
-  rpc SignupWithPhoneNumber(PhoneNumber) returns (Response) {}
-  rpc VerifyAccount(OTP) returns (UserProfile) {}
+  rpc SignupWithPhoneNumber(PhoneNumber) returns (SignUpResponse) {}
+  rpc VerifyAccount(VerifyAccountRequest) returns (VerifyAccountResponse) {}
   rpc Login(LoginRequest) returns (UserProfile) {}
   rpc OTPGenerate(PhoneNumber) returns (Response) {}
   rpc GetProfile(PhoneNumber) returns (UserProfile) {}
