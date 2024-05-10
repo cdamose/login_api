@@ -12,6 +12,11 @@ type VerifiedAccountResp struct {
 	Message string `json:"message"`
 }
 
+type LoginResponse struct {
+	Message string `json:"message"`
+	UserID  string `json:"user_id"`
+}
+
 type CommonResponse struct {
 	Message string `json:"message"`
 }

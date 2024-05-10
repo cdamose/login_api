@@ -112,6 +112,29 @@ func (m PostgresAuthRepository) GetValidOTPDetails(ctx context.Context, user_id 
 	return &otp_details, nil
 }
 
+func (m PostgresAuthRepository) Login(ctx context.Context, phone_number string, otp_code string) (*string, error) {
+	query := "INSERT INTO OTP (user_id, otp_code) SELECT user_id, :otp_code FROM UserAccount WHERE phone_number = :phone_number RETURNING user_id;"
+	param := map[string]interface{}{
+		"phone_number": phone_number,
+		"otp_code":     otp_code,
+	}
+	var user_id string
+	result, err := m.db.NamedQueryContext(ctx, query, param)
+
+	if err != nil {
+		return nil, err
+	}
+	defer result.Close()
+	if !result.Next() {
+		return nil, errors.New("no rows returned after insert")
+	}
+	err = result.Scan(&user_id)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to scan result into struct")
+	}
+	return &user_id, nil
+}
+
 func (m PostgresAuthRepository) GenerateOTP(ctx context.Context, phone_number string, otp_code string) (bool, error) {
 	query := "INSERT INTO OTP (user_id, otp_code) SELECT user_id, $2 FROM UserAccount WHERE phone_number = $1;"
 

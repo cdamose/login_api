@@ -70,3 +70,12 @@ func (ad *AuthDomain) GenerateOTP(ctx context.Context, phone_number string) (boo
 	}
 	return result, nil
 }
+
+func (ad *AuthDomain) Login(ctx context.Context, phone_number string) (*string, error) {
+	result, err := ad.repository.Login(ctx, phone_number, utils.GenerateOTP())
+	fmt.Println(err)
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
+}

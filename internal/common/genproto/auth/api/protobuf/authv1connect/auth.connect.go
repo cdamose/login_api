@@ -61,7 +61,7 @@ var (
 type AuthServiceClient interface {
 	SignupWithPhoneNumber(context.Context, *connect.Request[protobuf.PhoneNumber]) (*connect.Response[protobuf.SignUpResponse], error)
 	VerifyAccount(context.Context, *connect.Request[protobuf.VerifyAccountRequest]) (*connect.Response[protobuf.VerifyAccountResponse], error)
-	Login(context.Context, *connect.Request[protobuf.LoginRequest]) (*connect.Response[protobuf.UserProfile], error)
+	Login(context.Context, *connect.Request[protobuf.LoginRequest]) (*connect.Response[protobuf.LoginResponse], error)
 	OTPGenerate(context.Context, *connect.Request[protobuf.PhoneNumber]) (*connect.Response[protobuf.Response], error)
 	GetProfile(context.Context, *connect.Request[protobuf.PhoneNumber]) (*connect.Response[protobuf.UserProfile], error)
 }
@@ -88,7 +88,7 @@ func NewAuthServiceClient(httpClient connect.HTTPClient, baseURL string, opts ..
 			connect.WithSchema(authServiceVerifyAccountMethodDescriptor),
 			connect.WithClientOptions(opts...),
 		),
-		login: connect.NewClient[protobuf.LoginRequest, protobuf.UserProfile](
+		login: connect.NewClient[protobuf.LoginRequest, protobuf.LoginResponse](
 			httpClient,
 			baseURL+AuthServiceLoginProcedure,
 			connect.WithSchema(authServiceLoginMethodDescriptor),
@@ -113,7 +113,7 @@ func NewAuthServiceClient(httpClient connect.HTTPClient, baseURL string, opts ..
 type authServiceClient struct {
 	signupWithPhoneNumber *connect.Client[protobuf.PhoneNumber, protobuf.SignUpResponse]
 	verifyAccount         *connect.Client[protobuf.VerifyAccountRequest, protobuf.VerifyAccountResponse]
-	login                 *connect.Client[protobuf.LoginRequest, protobuf.UserProfile]
+	login                 *connect.Client[protobuf.LoginRequest, protobuf.LoginResponse]
 	oTPGenerate           *connect.Client[protobuf.PhoneNumber, protobuf.Response]
 	getProfile            *connect.Client[protobuf.PhoneNumber, protobuf.UserProfile]
 }
@@ -129,7 +129,7 @@ func (c *authServiceClient) VerifyAccount(ctx context.Context, req *connect.Requ
 }
 
 // Login calls auth.AuthService.Login.
-func (c *authServiceClient) Login(ctx context.Context, req *connect.Request[protobuf.LoginRequest]) (*connect.Response[protobuf.UserProfile], error) {
+func (c *authServiceClient) Login(ctx context.Context, req *connect.Request[protobuf.LoginRequest]) (*connect.Response[protobuf.LoginResponse], error) {
 	return c.login.CallUnary(ctx, req)
 }
 
@@ -147,7 +147,7 @@ func (c *authServiceClient) GetProfile(ctx context.Context, req *connect.Request
 type AuthServiceHandler interface {
 	SignupWithPhoneNumber(context.Context, *connect.Request[protobuf.PhoneNumber]) (*connect.Response[protobuf.SignUpResponse], error)
 	VerifyAccount(context.Context, *connect.Request[protobuf.VerifyAccountRequest]) (*connect.Response[protobuf.VerifyAccountResponse], error)
-	Login(context.Context, *connect.Request[protobuf.LoginRequest]) (*connect.Response[protobuf.UserProfile], error)
+	Login(context.Context, *connect.Request[protobuf.LoginRequest]) (*connect.Response[protobuf.LoginResponse], error)
 	OTPGenerate(context.Context, *connect.Request[protobuf.PhoneNumber]) (*connect.Response[protobuf.Response], error)
 	GetProfile(context.Context, *connect.Request[protobuf.PhoneNumber]) (*connect.Response[protobuf.UserProfile], error)
 }
@@ -217,7 +217,7 @@ func (UnimplementedAuthServiceHandler) VerifyAccount(context.Context, *connect.R
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("auth.AuthService.VerifyAccount is not implemented"))
 }
 
-func (UnimplementedAuthServiceHandler) Login(context.Context, *connect.Request[protobuf.LoginRequest]) (*connect.Response[protobuf.UserProfile], error) {
+func (UnimplementedAuthServiceHandler) Login(context.Context, *connect.Request[protobuf.LoginRequest]) (*connect.Response[protobuf.LoginResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("auth.AuthService.Login is not implemented"))
 }
 

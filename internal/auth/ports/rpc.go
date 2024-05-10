@@ -31,17 +31,17 @@ func (av *AuthServer) SignupWithPhoneNumber(ctx context.Context, re *connect.Req
 }
 func (av *AuthServer) VerifyAccount(ctx context.Context, re *connect.Request[authv1.VerifyAccountRequest]) (*connect.Response[authv1.VerifyAccountResponse], error) {
 	dto_obj, _ := av.Application.AuthApplication.VerifyAccount(ctx, re.Msg.UserId, re.Msg.Code)
-	// if err != nil {
-	// 	return nil, connect.NewError(connect.CodeUnknown, err)
-	// }
 	res := connect.NewResponse(&authv1.VerifyAccountResponse{
 		Message: dto_obj.Message,
 	})
 	return res, nil
 }
-func (av *AuthServer) Login(context.Context, *connect.Request[authv1.LoginRequest]) (*connect.Response[authv1.UserProfile], error) {
-	res := connect.NewResponse(&authv1.UserProfile{
-		PhoneNumber: "9677892850",
+func (av *AuthServer) Login(ctx context.Context, re *connect.Request[authv1.LoginRequest]) (*connect.Response[authv1.LoginResponse], error) {
+	dto_obj, _ := av.Application.AuthApplication.Login(ctx, re.Msg.PhoneNumber.Number)
+
+	res := connect.NewResponse(&authv1.LoginResponse{
+		UserId:  dto_obj.UserID,
+		Message: dto_obj.Message,
 	})
 	return res, nil
 }

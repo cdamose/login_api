@@ -36,7 +36,7 @@ func (app AuthApplication) SignUp(ctx context.Context, phone_number string) (*dt
 func (app AuthApplication) VerifyAccount(ctx context.Context, user_id string, otp string) (*dto.VerifiedAccountResp, error) {
 	var resp = &dto.VerifiedAccountResp{}
 	domain_obj, err := app.domain.VerifyAccount(ctx, user_id, otp)
-	
+
 	if err != nil {
 		resp.Message = "Account Not Able to verified , pls try again"
 	}
@@ -58,6 +58,17 @@ func (app AuthApplication) GenerateOTP(ctx context.Context, phone_number string)
 	} else {
 		resp.Message = "Seems to be given mobile number not register with our system"
 	}
+	return resp, err
+
+}
+
+func (app AuthApplication) Login(ctx context.Context, phone_number string) (*dto.LoginResponse, error) {
+	var resp = &dto.LoginResponse{}
+	domain_obj, err := app.domain.Login(ctx, phone_number)
+	if err != nil {
+		resp.Message = "Something went wrong,please try again"
+	}
+	resp.UserID = *domain_obj
 	return resp, err
 
 }

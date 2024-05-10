@@ -9,11 +9,14 @@ message Error{
   string error_info = 1;
 }
 
+
 message LoginRequest {
   PhoneNumber phone_number  = 1;
-  OTP otp = 2;
 }
-
+message LoginResponse{
+  string message = 1;
+  string user_id = 2;
+}
 
 message SignUpResponse {
   string phone_number  = 1;
@@ -56,7 +59,7 @@ message OTP {
 service AuthService {
   rpc SignupWithPhoneNumber(PhoneNumber) returns (SignUpResponse) {}
   rpc VerifyAccount(VerifyAccountRequest) returns (VerifyAccountResponse) {}
-  rpc Login(LoginRequest) returns (UserProfile) {}
+  rpc Login(LoginRequest) returns (LoginResponse) {}
   rpc OTPGenerate(PhoneNumber) returns (Response) {}
   rpc GetProfile(PhoneNumber) returns (UserProfile) {}
 }
