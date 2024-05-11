@@ -24,6 +24,15 @@ func NewAuthApplication(logger logrus.Entry, config config.Config, domain domain
 	}
 }
 
+func (app AuthApplication) GetUserProfile(ctx context.Context, phone_number string) (*dto.UserProfile, error) {
+	domain_obj, err := app.domain.GetUserProfile(ctx, phone_number)
+	if err != nil {
+		return nil, err
+	}
+	dto_obj := conversion.ConvertToUpdatedUserProfile(*domain_obj)
+	return &dto_obj, nil
+}
+
 func (app AuthApplication) SignUp(ctx context.Context, phone_number string) (*dto.UserProfile, error) {
 	domain_obj, err := app.domain.CreateUserProfile(ctx, phone_number)
 	if err != nil {

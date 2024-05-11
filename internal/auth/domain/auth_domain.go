@@ -26,6 +26,14 @@ func NewAuthDomain(logger logrus.Entry, config config.Config, repository reposit
 	}
 }
 
+func (ad *AuthDomain) GetUserProfile(ctx context.Context, phone_number string) (*dao.UserProfile, error) {
+	profile, err := ad.repository.GetUserProfile(ctx, phone_number)
+	if err != nil {
+		return nil, err
+	}
+	return profile, err
+
+}
 func (ad *AuthDomain) CreateUserProfile(ctx context.Context, phone_number string) (*dao.UserProfile, error) {
 	is_account_already_exist, err := ad.repository.CheckMobileNumberAlredayExists(ctx, phone_number)
 	if err != nil {

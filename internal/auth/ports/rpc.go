@@ -20,7 +20,13 @@ func NewAuthServer(application container.Application) *AuthServer {
 func (av *AuthServer) SignupWithPhoneNumber(ctx context.Context, re *connect.Request[authv1.PhoneNumber]) (*connect.Response[authv1.SignUpResponse], error) {
 	dto_obj, err := av.Application.AuthApplication.SignUp(ctx, re.Msg.Number)
 	if err != nil {
-		return nil, connect.NewError(connect.CodeAlreadyExists, err)
+		res := connect.NewResponse(&authv1.SignUpResponse{
+			Error: &authv1.Error{
+				Message: "Something went wrong",
+				Code:    "10002",
+			},
+		})
+		return res, nil
 	}
 	res := connect.NewResponse(&authv1.SignUpResponse{
 		UserId:    dto_obj.UserId,
@@ -55,9 +61,23 @@ func (av *AuthServer) OTPGenerate(ctx context.Context, re *connect.Request[authv
 	})
 	return res, nil
 }
-func (av *AuthServer) GetProfile(context.Context, *connect.Request[authv1.PhoneNumber]) (*connect.Response[authv1.UserProfile], error) {
-	res := connect.NewResponse(&authv1.UserProfile{
-		PhoneNumber: "9677892850",
+func (av *AuthServer) GetProfile(ctx context.Context, re *connect.Request[authv1.PhoneNumber]) (*connect.Response[authv1.ProfileResponse], error) {
+	dto_obj, err := av.Application.AuthApplication.GetUserProfile(ctx, re.Msg.Number)
+	if err != nil {
+		res := connect.NewResponse(&authv1.ProfileResponse{
+			Error: &authv1.Error{
+				Message: "Something went wrong",
+				Code:    "10002",
+			},
+		})
+		return res, nil
+	}
+	res := connect.NewResponse(&authv1.ProfileResponse{
+		IsVerfied:   dto_obj.IsVerified,
+		CreatedAt:   dto_obj.CreatedAt,
+		PhoneNumber: dto_obj.PhoneNumber,
+		VerfiedAt:   dto_obj.VerfiedAt,
 	})
+
 	return res, nil
 }

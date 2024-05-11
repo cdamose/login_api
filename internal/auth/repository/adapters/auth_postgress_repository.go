@@ -41,6 +41,28 @@ func (m PostgresAuthRepository) CheckMobileNumberAlredayExists(ctx context.Conte
 	return true, nil
 }
 
+func (m PostgresAuthRepository) GetUserProfile(ctx context.Context, mobile_number string) (*dao.UserProfile, error) {
+	query := `select * from UserAccount where phone_number = :phone_number`
+	param := map[string]interface{}{
+		"phone_number": mobile_number,
+	}
+	var user_profile dao.UserProfile
+	result, err := m.db.NamedQueryContext(ctx, query, param)
+
+	if err != nil {
+		return nil, err
+	}
+	defer result.Close()
+	if !result.Next() {
+		return nil, errors.New("no rows returned after insert")
+	}
+	err = result.StructScan(&user_profile)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to scan result into struct")
+	}
+	return &user_profile, nil
+}
+
 func (m PostgresAuthRepository) CreateUserProfile(ctx context.Context, mobile_number string) (*dao.UserProfile, error) {
 	query := `INSERT INTO UserAccount (user_id, phone_number) VALUES (uuid_generate_v4(), :phone_number) RETURNING *`
 	param := map[string]interface{}{

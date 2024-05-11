@@ -63,7 +63,7 @@ type AuthServiceClient interface {
 	VerifyAccount(context.Context, *connect.Request[protobuf.VerifyAccountRequest]) (*connect.Response[protobuf.VerifyAccountResponse], error)
 	Login(context.Context, *connect.Request[protobuf.LoginRequest]) (*connect.Response[protobuf.LoginResponse], error)
 	OTPGenerate(context.Context, *connect.Request[protobuf.PhoneNumber]) (*connect.Response[protobuf.Response], error)
-	GetProfile(context.Context, *connect.Request[protobuf.PhoneNumber]) (*connect.Response[protobuf.UserProfile], error)
+	GetProfile(context.Context, *connect.Request[protobuf.PhoneNumber]) (*connect.Response[protobuf.ProfileResponse], error)
 }
 
 // NewAuthServiceClient constructs a client for the auth.AuthService service. By default, it uses
@@ -100,7 +100,7 @@ func NewAuthServiceClient(httpClient connect.HTTPClient, baseURL string, opts ..
 			connect.WithSchema(authServiceOTPGenerateMethodDescriptor),
 			connect.WithClientOptions(opts...),
 		),
-		getProfile: connect.NewClient[protobuf.PhoneNumber, protobuf.UserProfile](
+		getProfile: connect.NewClient[protobuf.PhoneNumber, protobuf.ProfileResponse](
 			httpClient,
 			baseURL+AuthServiceGetProfileProcedure,
 			connect.WithSchema(authServiceGetProfileMethodDescriptor),
@@ -115,7 +115,7 @@ type authServiceClient struct {
 	verifyAccount         *connect.Client[protobuf.VerifyAccountRequest, protobuf.VerifyAccountResponse]
 	login                 *connect.Client[protobuf.LoginRequest, protobuf.LoginResponse]
 	oTPGenerate           *connect.Client[protobuf.PhoneNumber, protobuf.Response]
-	getProfile            *connect.Client[protobuf.PhoneNumber, protobuf.UserProfile]
+	getProfile            *connect.Client[protobuf.PhoneNumber, protobuf.ProfileResponse]
 }
 
 // SignupWithPhoneNumber calls auth.AuthService.SignupWithPhoneNumber.
@@ -139,7 +139,7 @@ func (c *authServiceClient) OTPGenerate(ctx context.Context, req *connect.Reques
 }
 
 // GetProfile calls auth.AuthService.GetProfile.
-func (c *authServiceClient) GetProfile(ctx context.Context, req *connect.Request[protobuf.PhoneNumber]) (*connect.Response[protobuf.UserProfile], error) {
+func (c *authServiceClient) GetProfile(ctx context.Context, req *connect.Request[protobuf.PhoneNumber]) (*connect.Response[protobuf.ProfileResponse], error) {
 	return c.getProfile.CallUnary(ctx, req)
 }
 
@@ -149,7 +149,7 @@ type AuthServiceHandler interface {
 	VerifyAccount(context.Context, *connect.Request[protobuf.VerifyAccountRequest]) (*connect.Response[protobuf.VerifyAccountResponse], error)
 	Login(context.Context, *connect.Request[protobuf.LoginRequest]) (*connect.Response[protobuf.LoginResponse], error)
 	OTPGenerate(context.Context, *connect.Request[protobuf.PhoneNumber]) (*connect.Response[protobuf.Response], error)
-	GetProfile(context.Context, *connect.Request[protobuf.PhoneNumber]) (*connect.Response[protobuf.UserProfile], error)
+	GetProfile(context.Context, *connect.Request[protobuf.PhoneNumber]) (*connect.Response[protobuf.ProfileResponse], error)
 }
 
 // NewAuthServiceHandler builds an HTTP handler from the service implementation. It returns the path
@@ -225,6 +225,6 @@ func (UnimplementedAuthServiceHandler) OTPGenerate(context.Context, *connect.Req
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("auth.AuthService.OTPGenerate is not implemented"))
 }
 
-func (UnimplementedAuthServiceHandler) GetProfile(context.Context, *connect.Request[protobuf.PhoneNumber]) (*connect.Response[protobuf.UserProfile], error) {
+func (UnimplementedAuthServiceHandler) GetProfile(context.Context, *connect.Request[protobuf.PhoneNumber]) (*connect.Response[protobuf.ProfileResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("auth.AuthService.GetProfile is not implemented"))
 }

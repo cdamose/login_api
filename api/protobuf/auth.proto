@@ -5,9 +5,6 @@ option go_package = "login_api/internal/common/genproto/auth/api/protobuf;authv1
 
 
 
-message Error{
-  string error_info = 1;
-}
 
 
 message LoginRequest {
@@ -18,14 +15,27 @@ message LoginResponse{
   string user_id = 2;
 }
 
+message Error{
+  string message = 1;
+  string  code = 2; 
+}
+
 message SignUpResponse {
   string phone_number  = 1;
   string created_at = 2;
   bool is_verfied = 3;
   string user_id = 4;
+  Error error = 5;
   
 }
 
+message ProfileResponse{
+  string phone_number  = 1;
+  string created_at = 2;
+  string verfied_at = 3;
+  bool is_verfied = 4;
+  Error error = 5;
+}
 message UserProfile {
   string phone_number  = 1;
   string created_at = 2;
@@ -61,5 +71,5 @@ service AuthService {
   rpc VerifyAccount(VerifyAccountRequest) returns (VerifyAccountResponse) {}
   rpc Login(LoginRequest) returns (LoginResponse) {}
   rpc OTPGenerate(PhoneNumber) returns (Response) {}
-  rpc GetProfile(PhoneNumber) returns (UserProfile) {}
+  rpc GetProfile(PhoneNumber) returns (ProfileResponse) {}
 }
