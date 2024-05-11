@@ -1,0 +1,17 @@
+FROM golang:1.22
+ADD . /usr/bin/communication_svc
+ADD ./db /usr/bin/communication_svc/db
+
+RUN ls
+COPY . /usr/bin/communication_svc
+COPY db /usr/bin/communication_svc
+RUN ls
+WORKDIR /usr/bin/communication_svc/internal/communication_svc
+RUN echo $GOPATH
+RUN go version
+RUN go mod download
+RUN go build
+RUN go install -v ./...
+ENTRYPOINT communication_svc
+EXPOSE 8080
+

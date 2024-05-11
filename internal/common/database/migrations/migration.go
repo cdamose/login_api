@@ -13,8 +13,7 @@ import (
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 )
 
-func ExecMigration(user_name string, password string, host string, migration_db string) {
-	//db, err := sql.Open("mysql", user_name+":"+password+"@tcp("+host+":3306)/"+migration_db+"?multiStatements=true")
+func ExecMigration(user_name string, password string, host string, migration_db string,file_path string) {
 	db, err := sql.Open("postgres", "postgres://postgres:Looser1997$@postgres:5432/auth?sslmode=disable")
 
 	fmt.Println("debug")
@@ -23,7 +22,7 @@ func ExecMigration(user_name string, password string, host string, migration_db 
 	driver, err := postgres.WithInstance(db, &postgres.Config{})
 	fmt.Println(err)
 	fmt.Println("debug 2")
-	file := "file://./db/migrations"
+	file := file_path //"file://./db/migrations/auth"
 	previousDir := filepath.Dir(filepath.Dir(file))
 	print(previousDir)
 

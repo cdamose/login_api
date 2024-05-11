@@ -35,13 +35,36 @@ services:
       MYSQL_ADDR: mysql  # Use the service name as the MySQL address
       MYSQL_USER: root
       MYSQL_PASSWORD: Looser1997$$
-      MYSQL_DATABASE: url_shortner
+      MYSQL_DATABASE: auth
       BASE_URL : http://localhost:8090/api/v1/redirect/
       PORT: 8090
     depends_on:
       postgres:
         condition: service_healthy
     restart: unless-stopped
-  
+
+  communication_svc:
+    image: autcommunication_svch_svc:latest
+    build:
+      context: .
+      dockerfile: CommunicationSVCDockerfile
+    volumes:
+      - ./internal:/app
+      - ./db:/app/db
+    working_dir: /app
+    ports:
+      - "8081:8081"
+    environment:
+      MYSQL_ADDR: mysql  # Use the service name as the MySQL address
+      MYSQL_USER: root
+      MYSQL_PASSWORD: Looser1997$$
+      MYSQL_DATABASE: auth
+      BASE_URL : http://localhost:8090/api/v1/redirect/
+      PORT: 8081
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+   
   
 

@@ -34,7 +34,7 @@ func main() {
 	}
 	application, err := container.InitApplication(config, db)
 	//execute database migration files
-	migrations.ExecMigration(config.MYSQLUser, config.MYSQLPassword, config.MYSQLHost, config.MYSQLDatabase)
+	migrations.ExecMigration(config.MYSQLUser, config.MYSQLPassword, config.MYSQLHost, config.MYSQLDatabase, "file://./db/migrations/auth")
 	auther := ports.NewAuthServer(application)
 	mux := http.NewServeMux()
 	path, handler := authv1connect.NewAuthServiceHandler(auther)
