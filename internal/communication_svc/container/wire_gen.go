@@ -33,10 +33,10 @@ func InitializePingApplication(config2 config.Config, db *sqlx.DB) (app.PingApp,
 	return pingApplication, nil
 }
 
-func InitializeAuthApplication(config2 config.Config, db *sqlx.DB) (app.AuthApp, error) {
+func InitializeCommunicationApplication(config2 config.Config, db *sqlx.DB) (app.CommunicationApp, error) {
 	entry := logs.Init(config2)
-	postgresAuthRepository := adapters.NewPostgresAuthRepository(db, entry, config2)
-	authDomain := domain.NewAuthDomain(entry, config2, postgresAuthRepository)
-	authApplication := app.NewAuthApplication(entry, config2, authDomain)
-	return authApplication, nil
+	postgresAuthRepository := adapters.NewPostgresCommunicationRepository(db, entry, config2)
+	communicationDomain := domain.NewCommunicationDomain(entry, config2, postgresAuthRepository)
+	communicationApplication := app.NewCommunicationApplication(entry, config2, communicationDomain)
+	return communicationApplication, nil
 }

@@ -5,6 +5,6 @@ import (
 )
 
 type Application struct {
-	PingApplication app.PingApp
-	AuthApplication app.AuthApp
+	PingApplication          app.PingApp
+	CommunicationApplication app.CommunicationApp
 }

@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package communication;
+option go_package = "login_api/internal/common/genproto/communication/api/protobuf;communicationv1";
+
+
+message Request{
+
+}
+
+message Response {
+  string message = 1;
+}
+service CommunicationService {
+  rpc Ping(Request) returns (Response) {}
+}

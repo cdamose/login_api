@@ -14,7 +14,7 @@ import (
 	//"login_api/internal/common/server"
 	"net/http"
 
-	"login_api/internal/common/genproto/auth/api/protobuf/authv1connect"
+	"login_api/internal/common/genproto/communication/api/protobuf/communicationv1connect"
 
 	//"github.com/go-chi/chi/v5"
 	_ "github.com/go-sql-driver/mysql"
@@ -27,6 +27,7 @@ import (
 )
 
 func main() {
+
 	config := config.InitConfig()
 	db, err := adapters.NewPostgreSQLConnection()
 	if err != nil {
@@ -35,9 +36,9 @@ func main() {
 	application, err := container.InitApplication(config, db)
 	//execute database migration files
 	migrations.ExecMigration(config.MYSQLUser, config.MYSQLPassword, config.MYSQLHost, config.MYSQLDatabase, "file://./db/migrations/communication_svc")
-	auther := ports.NewAuthServer(application)
+	auther := ports.NewCommunicationServer(application)
 	mux := http.NewServeMux()
-	path, handler := authv1connect.NewAuthServiceHandler(auther)
+	path, handler := communicationv1connect.NewCommunicationServiceHandler(auther)
 	mux.Handle(path, handler)
 	http.ListenAndServe(
 		":"+config.Port,
