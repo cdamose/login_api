@@ -55,6 +55,8 @@ services:
     ports:
       - "8081:8081"
     environment:
+      TWILIO_ACCOUNT_SID : AC18f309e6dbb9c760c6b291ba59bf4df9
+      TWILIO_AUTH_TOKEN : e1355b0ced45ec92e32e279d0135c57b
       MYSQL_ADDR: mysql  # Use the service name as the MySQL address
       MYSQL_USER: root
       MYSQL_PASSWORD: Looser1997$$
