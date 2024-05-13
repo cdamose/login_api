@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 
 	"login_api/internal/auth/container"
@@ -27,12 +28,23 @@ import (
 )
 
 func main() {
+	// broker := messaging_broker.NewRappitMQBroker()
+
+	// messageHandler := func(body []byte) {
+	// 	// Process the incoming message from RabbitMQ here
+	// 	fmt.Printf("Received message: %s\n", body)
+	// }
+
+	// // Subscribe to the RabbitMQ queue/topic
+	// go broker.Subscribe("verification_topic", messageHandler)
+
 	config := config.InitConfig()
 	db, err := adapters.NewPostgreSQLConnection()
 	if err != nil {
 		log.Fatalln(err)
 	}
 	application, err := container.InitApplication(config, db)
+	fmt.Println(err)
 	//execute database migration files
 	migrations.ExecMigration(config.MYSQLUser, config.MYSQLPassword, config.MYSQLHost, config.MYSQLDatabase, "file://./db/migrations/auth")
 	auther := ports.NewAuthServer(application)
@@ -43,4 +55,21 @@ func main() {
 		":8080",
 		h2c.NewHandler(mux, &http2.Server{}),
 	)
+	// will move into common module
+	//startRapitmqConsumenr()
+	// fmt.Println("test  35")
+
+	// fmt.Println("test  36")
+
+	//broker.Subscribe("")
+
+	// Wait for termination signal to gracefully shutdown
+	// exitSignal := make(chan os.Signal, 1)
+	// signal.Notify(exitSignal, syscall.SIGINT, syscall.SIGTERM)
+	// <-exitSignal
+
+	// // Stop consuming messages from RabbitMQ
+	// broker.Stop()
+
+	// fmt.Println("Shutting down...")
 }

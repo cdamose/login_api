@@ -18,6 +18,14 @@ services:
       interval: 30s
       timeout: 10s
       retries: 5
+  rabbitmq:
+    image: rabbitmq:3.8-management 
+    ports:
+      - "5672:5672" 
+      - "15672:15672" 
+    environment:
+      RABBITMQ_DEFAULT_USER: test 
+      RABBITMQ_DEFAULT_PASS: test 
     
   auth_svc:
     image: auth_svc:latest
@@ -66,6 +74,9 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+      rabbitmq:
+        condition: service_started
+        
     restart: unless-stopped
    
   
