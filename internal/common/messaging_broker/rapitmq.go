@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"login_api/internal/communication_svc/container"
+	"time"
 
 	amqp "github.com/rabbitmq/amqp091-go"
 )
@@ -26,6 +27,45 @@ func NewRappitMQBroker(application container.Application) *RappitMQBroker {
 		done:        make(chan struct{}),
 		application: application,
 	}
+}
+
+func Publish(topic string, sms_message string, phone_number string) {
+	conn, err := amqp.Dial("amqp://test:test@rabbitmq:5672/")
+	failOnError(err, "Failed to connect to RabbitMQ")
+	defer conn.Close()
+
+	ch, err := conn.Channel()
+	failOnError(err, "Failed to open a channel")
+	defer ch.Close()
+	q, err := ch.QueueDeclare(
+		topic, //"verification_topic", // name
+		false, // durable
+		false, // delete when unused
+		false, // exclusive
+		false, // no-wait
+		nil,   // arguments
+	)
+	failOnError(err, "Failed to declare a queue")
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	message := Message{Message: sms_message, PhoneNumber: phone_number}
+	jsonBody, err := json.Marshal(message)
+	if err != nil {
+		failOnError(err, "Failed to marshal JSON")
+	}
+	err = ch.PublishWithContext(ctx,
+		"",     // exchange
+		q.Name, // routing key
+		false,  // mandatory
+		false,  // immediate
+		amqp.Publishing{
+			ContentType: "application/json",
+			Body:        jsonBody,
+		})
+	failOnError(err, "Failed to publish a message")
+	log.Printf(" [x] Sent %s\n", jsonBody)
 }
 
 func (rq *RappitMQBroker) Subscribe(topic string, handler MessageHandler) {
@@ -81,7 +121,7 @@ func (rq *RappitMQBroker) Subscribe(topic string, handler MessageHandler) {
 			fmt.Println("BEFORE SENING SMS")
 			fmt.Println(data.Message)
 			fmt.Println(data.PhoneNumber)
-			i, err := rq.application.CommunicationApplication.SendSMS(context.Background(), "+919677892850", "from servcie")
+			i, err := rq.application.CommunicationApplication.SendSMS(context.Background(), data.PhoneNumber, data.Message)
 			fmt.Println(i)
 			fmt.Println(err)
 		}

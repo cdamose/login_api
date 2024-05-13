@@ -142,7 +142,7 @@ func (m PostgresAuthRepository) Login(ctx context.Context, phone_number string, 
 	}
 	var user_id string
 	result, err := m.db.NamedQueryContext(ctx, query, param)
-
+	fmt.Println(err)
 	if err != nil {
 		return nil, err
 	}

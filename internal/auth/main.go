@@ -44,6 +44,7 @@ func main() {
 		log.Fatalln(err)
 	}
 	application, err := container.InitApplication(config, db)
+
 	fmt.Println(err)
 	//execute database migration files
 	migrations.ExecMigration(config.MYSQLUser, config.MYSQLPassword, config.MYSQLHost, config.MYSQLDatabase, "file://./db/migrations/auth")
