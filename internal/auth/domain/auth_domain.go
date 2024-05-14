@@ -86,9 +86,9 @@ func (ad *AuthDomain) GenerateOTP(ctx context.Context, phone_number string) (boo
 func (ad *AuthDomain) Login(ctx context.Context, phone_number string) (*string, error) {
 	otp := utils.GenerateOTP()
 	//publish otp and phone number to verification_topic
-	messaging_broker.Publish("verification_topic", "YOUR OTP IS"+otp, phone_number)
+	messaging_broker.Publish("verification_topic", otp, phone_number)
 	result, err := ad.repository.Login(ctx, phone_number, otp)
-	fmt.Println("debug 45")
+	ad.repository.RecordUserEvents(ctx, *result, "Login")
 	fmt.Println(err)
 	if err != nil {
 		return nil, err

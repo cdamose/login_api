@@ -159,11 +159,6 @@ func (m PostgresAuthRepository) Login(ctx context.Context, phone_number string, 
 
 func (m PostgresAuthRepository) GenerateOTP(ctx context.Context, phone_number string, otp_code string) (bool, error) {
 	query := "INSERT INTO OTP (user_id, otp_code) SELECT user_id, $2 FROM UserAccount WHERE phone_number = $1;"
-
-	// param := map[string]interface{}{
-	// 	"phone_number": phone_number,
-	// 	"otp_code":     otp_code,
-	// }
 	result, err := m.db.ExecContext(ctx, query, phone_number, otp_code)
 	if err != nil {
 		return false, err
@@ -181,74 +176,16 @@ func (m PostgresAuthRepository) GenerateOTP(ctx context.Context, phone_number st
 
 }
 
-// func (m PostgresAuthRepository) FetchTop3Websites(ctx context.Context) ([]dao.Website, error) {
-// 	query := `
-// 	SELECT w.id, w.name, w.domain
-// 	FROM websites AS w
-// 	JOIN (
-// 		SELECT website_id, COUNT(*) AS total_count
-// 		FROM websites_acccess_count
-// 		GROUP BY website_id
-// 		ORDER BY total_count DESC
-// 		LIMIT 3
-// 	) AS wc ON w.id = wc.website_id
-// 	`
-
-// 	var websites []dao.Website
-// 	err := m.db.SelectContext(ctx, &websites, query)
-// 	if err != nil {
-// 		return nil, fmt.Errorf("failed to fetch top 3 websites: %w", err)
-// 	}
-
-// 	return websites, nil
-// }
-// func (m PostgresAuthRepository) GetActualURL(ctx context.Context, shorten_url string) (string, error) {
-// 	var originalURL string
-// 	query := "SELECT original_url FROM urls WHERE short_url = ?"
-// 	err := m.db.GetContext(ctx, &originalURL, query, shorten_url)
-// 	if err != nil {
-// 		if err == sql.ErrNoRows {
-// 			return "", err
-// 		}
-// 		return "", err
-// 	}
-// 	return originalURL, nil
-// }
-// func (m PostgresAuthRepository) InsertShortenUrl(ctx context.Context, url string, shorten_url string) (*dao.ShortenUrl, error) {
-// 	var data_obj dao.ShortenUrl
-
-// 	params := map[string]interface{}{
-// 		"id":           uuid.New().String(),
-// 		"original_url": url,
-// 		"short_url":    shorten_url,
-// 	}
-// 	query := "INSERT INTO urls (id, original_url, short_url) VALUES (:id, :original_url, :short_url)"
-// 	_, err := m.db.NamedExec(query, params)
-// 	if err != nil {
-// 		fmt.Println("Error inserting data into the table:", err)
-// 		return nil, err
-// 	}
-
-// 	if err == nil {
-// 		data_obj = dao.ShortenUrl{
-// 			ShortenURL: shorten_url,
-// 		}
-// 	}
-
-// 	return &data_obj, err
-// }
-
-// func (m PostgresAuthRepository) IsShortenURLExists(ctx context.Context, shorten_url string) bool {
-// 	var id string
-// 	query := "SELECT id FROM urls WHERE short_url = ?"
-// 	err := m.db.GetContext(ctx, &id, query, shorten_url)
-// 	if err != nil {
-// 		if err == sql.ErrNoRows {
-// 			return false
-// 		} else {
-// 			return true
-// 		}
-
-// 	}
-// 	return true
-// }
+func (m PostgresAuthRepository) RecordUserEvents(ctx context.Context, user_id string, event_name string) (bool, error) {
+	query := "INSERT INTO login_logout_events (user_id, event_type) VALUES (:user_id, :event_name);"
+	param := map[string]interface{}{
+		"user_id":    user_id,
+		"event_name": event_name,
+	}
+	_, err := m.db.NamedQueryContext(ctx, query, param)
+	fmt.Println(err)
+	if err != nil {
+		return false, err
+	}
+	return true, nil
+}
